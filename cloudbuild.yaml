@@ -1,0 +1,43 @@
+steps:
+#upload DAG
+- name: "gcr.io/cloud-builders/gcloud"
+  entrypoint: "ls"
+  args: ["-la", "/workspace"]  
+- name: "gcr.io/cloud-builders/gcloud"
+  entrypoint: "gsutil"
+  args: ["-m","cp","-r","/workspace/DAG","gs://mybuckets-databrickets"]
+- name: "gcr.io/cloud-builders/gcloud"
+  entrypoint: "gsutil"
+  args: ["-m","cp","-r","/workspace/main.py","gs://mybuckets-databrickets"]
+- name: "gcr.io/cloud-builders/gcloud"
+  entrypoint: "gsutil"
+  args: ["-m","cp","-r","/workspace/app_config.json","gs://mybuckets-databrickets"]
+- name: "gcr.io/cloud-builders/gcloud"
+  entrypoint: "gsutil"
+  args: ["-m","cp","-r","/workspace/*","gs://mybuckets-databrickets"]
+
+#Python installation
+- name: python
+  entrypoint: pip3
+  args: ["install", "databricks-cli"]
+#Python requirement file
+- name: python
+  entrypoint: pip3
+  args: ["install","-r","requirements.txt", "--user"]
+
+#configuration Between Cloud Build and Databricks
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args: ['sh', 'db-config.sh']
+  env:  
+  - 'DATABRICKS_HOST=$host_id'
+  - 'DATABRICKS_TOKEN=$token_id'
+  - 'DATABRICKS_CONFIG_PROFILE=$config' 
+  
+- name: 'gcr.io/cloud-builders/curl'
+  args: ['--netrc-file', './token', '--data', '@create_job.json', '-X', 'POST', 'https://1871036088967188.8.gcp.databricks.com/api/2.0/jobs/create']
+  
+
+#log Buckets Update
+logsBucket: 'gs://mybuckets-databrickets' 
+
+
