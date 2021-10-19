@@ -1,0 +1,4 @@
+{
+  "database":"sample_dev",
+  "planes_file": "dbfs:/databricks-datasets/asa/planes"
+}

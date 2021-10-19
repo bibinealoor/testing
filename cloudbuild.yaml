@@ -1,0 +1,7 @@
+steps:
+ 
+# fetch secrets
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: ['sh', 'dir.sh']
+
+
